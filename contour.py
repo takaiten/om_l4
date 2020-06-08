@@ -134,22 +134,25 @@ def global_search_2(m, simple_n=20*20):
     return x_start
 
 
+def is_in_interval(x):
+    return interval[0] <= x[0] <= interval[1] and interval[0] <= x[1] <= interval[1]
+
+
 def global_search_3(m):
     n = 0
-    x0 = random_uniform_2d()
-    x = best_take(x0)
-    rand_dir = random_uniform_2d(-1, 1)
-    f_x_cur, f_x_prev = None, None
+    x_prev = random_uniform_2d()
+    direction = random_uniform_2d(-1, 1)
+    x = best_take(x_prev)
+    f_x_prev = f(x_prev)
     while n < m:
-        x = [x[0] + rand_dir[0], x[1] + rand_dir[1]]
+        x += direction
+        f_x_cur = f(x)
         ax.scatter(x[0], x[1], s=1, c="magenta")
-        if not f_x_prev and not f_x_cur:
-            f_x_cur = f_x_prev = f(x)
-        else:
+        if f_x_cur < f_x_prev and is_in_interval(x):
             f_x_prev = f_x_cur
-            f_x_cur = f(x)
-        if f_x_cur > f_x_prev:
-            break
+        else:
+            x = x_prev
+            direction = random_uniform_2d(-1, 1)
         n += 1
     return best_take(x)
 
@@ -172,7 +175,7 @@ def main():
     # print(res)
 
     # Part 4. Algorithm 3
-    res = global_search_3(15)
+    res = global_search_3(30)
     print(res)
 
     plt.show()
