@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import AutoMinorLocator, MultipleLocator
+import functools
 
 # Init figure
 fig, ax = plt.subplots()
@@ -118,7 +119,7 @@ def global_search_1(m):
     return best_point
 
 
-def global_search_2(m, simple_n=20*20):
+def global_search_2(m, simple_n=20 * 20):
     n = 0
     x_start = best_take(random_uniform_2d())
     f_x_start = f(x_start)
@@ -157,6 +158,47 @@ def global_search_3(m):
     return best_take(x)
 
 
+def global3(m, q):
+    n, p = 0, 0
+
+    x0 = random_uniform_2d()
+    x1 = best_take(x0)
+    f_x1 = f(x1)
+
+    while n < m:
+        x = x1
+        direction = random_uniform_2d(-1, 1)
+        while True:
+            f_x_prev = f(x)
+            while not is_in_interval(x + direction):
+                direction = random_uniform_2d(-1, 1)
+            x += direction
+            ax.scatter(x[0], x[1], s=1, c="magenta")
+            if f(x) > f_x_prev or p > q:
+                break
+            else:
+                p += 1
+
+        x2 = best_take(x)
+
+        if f_x1 < f(x2):
+            x1 = x2
+        n += 1
+
+    return x1
+
+
+def simple_global_search(eps, p):
+    v = (interval[1] - interval[0]) * (interval[1] - interval[0])
+    v_eps = functools.reduce(lambda a, b: a * b, eps)
+    p_eps = v_eps / v
+    n_min = np.log(1 - p) / np.log(1 - p_eps)
+    n_min = int(np.ceil(n_min))
+
+    print(n_min)
+    return simple_search(n_min, True), n_min
+
+
 def main():
     # Part 1
     # res_simple = simple_search(20 * 20 * 10, True)
@@ -175,9 +217,17 @@ def main():
     # print(res)
 
     # Part 4. Algorithm 3
-    res = global_search_3(30)
-    print(res)
+    # res = global3(5, 25)
+    # print(res)
 
+    # Part 1.5. Simple Search by eps
+    eps = 0.5
+    probability = 0.1
+    res, n = simple_global_search([eps, eps], probability)
+    print(res)
+    print(f(res))
+
+    ax.set_title('EPS = {0} P = {1} N = {2}'.format(eps, probability, n), fontsize=15)
     plt.show()
 
 
