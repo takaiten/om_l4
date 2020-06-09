@@ -149,7 +149,7 @@ def global_search_3(m):
         x += direction
         f_x_cur = f(x)
         ax.scatter(x[0], x[1], s=1, c="magenta")
-        if f_x_cur < f_x_prev and is_in_interval(x):
+        if f_x_cur >= f_x_prev and is_in_interval(x):
             f_x_prev = f_x_cur
         else:
             x = x_prev
